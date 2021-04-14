@@ -25,8 +25,12 @@ class Browser:
         options.headless = False
 
         browser = webdriver.Firefox(
+            # for windows
             # executable_path="firefoxdriver\geckodriver.exe",
+
+            # for linux
             executable_path='firefoxdriver/geckodriver',
+
             options=options,
         )
         browser.set_window_size(1272, 774)
