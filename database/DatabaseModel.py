@@ -1,10 +1,12 @@
 from peewee import *
 
-database = SqliteDatabase('test_orders.db')
+database = SqliteDatabase('orders.db')
+
 
 class BaseModel(Model):
     class Meta:
         database = database
+
 
 class OrdersModel(BaseModel):
     id = PrimaryKeyField(null=False)
@@ -23,7 +25,8 @@ class OrdersModel(BaseModel):
     created_at = IntegerField(null=True)
     updated_at = IntegerField(null=True)
 
-    def update_with_status_2(id, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None, orders=None, cards=None, date_of_check=None):
+    def update_with_status_2(id, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
+                             orders=None, cards=None, date_of_check=None):
         # достаем нужную строку
         row = OrdersModel.get(OrdersModel.id == id)
         # обновляем ее поля
@@ -46,6 +49,16 @@ class OrdersModel(BaseModel):
         row.status = 3
         # сохраняем 
         row.save()
+
+    @staticmethod
+    def get_by_email(email: str):
+        # достаем нужную строку
+        row = OrdersModel.get(OrdersModel.email == email)
+
+        return row
+
+    def set_country(self, address_book):
+        pass
 
 
     class Meta:

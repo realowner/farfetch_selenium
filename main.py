@@ -3,6 +3,7 @@ from parts.GetProxy import GetProxy
 from database.DatabaseModel import OrdersModel
 
 import time
+import json
 
 # testing db conn
 def db_check():
@@ -20,10 +21,10 @@ def check(ip, port):
         try:
             browser.get('https://www.farfetch.com/ua/useraccount.aspx')
             login_input = browser.find_element_by_id('email-input-login')
-            login_input.send_keys('someofus@mail.ru')
+            login_input.send_keys('11mself@stmaryscalne.org')
             time.sleep(3)
             pass_input = browser.find_element_by_id('password-input-login')
-            pass_input.send_keys('1Qzxc12345')
+            pass_input.send_keys('polo55')
             time.sleep(3)
             checkbox = browser.find_element_by_id('RememberMe')
 
@@ -36,9 +37,19 @@ def check(ip, port):
             login_btn.click()
             time.sleep(3)
 
-            browser.get('https://www.farfetch.com/ua/ajax/userdetails')       
+            browser.get('https://www.farfetch.com/ua/addressbook/')
+            # time.sleep(3)
+            # address = json.loads(browser.find_element_by_id("json").text)
+            # print(address)
 
-            time.sleep(20)
+
+            # browser.get('https://www.farfetch.com/ua/ajax/userdetails')
+            # time.sleep(3)
+            #
+            # browser.get('https://www.farfetch.com/ua/orders/')
+            # print(json.loads(browser.find_element_by_id("json").text))
+
+            time.sleep(80)
         except Exception as expt:
             print(expt)
         
@@ -49,7 +60,12 @@ def check(ip, port):
         browser.quit()
 
 
-# ip, port = None. Для работы с прокси -> GetProxy
-check(ip=None, port=None)
+if __name__ == '__main__':
+    # model = OrdersModel.get_by_email('Andrew.abraham@mac.com')
+    # model.__setattr__('countryCode', 'ru_RU')
+    # model.save()
+    # i=0
+    # ip, port = None. Для работы с прокси -> GetProxy
+    check(ip='176.28.64.225', port=3128)
 
 # db_check()
