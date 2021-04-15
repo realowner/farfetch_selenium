@@ -16,15 +16,16 @@ def db_check():
 def check(ip, port):
 
     browser = Browser.my_browser(ip, port)
+    # browser.set_page_load_timeout(60)
     try:
   
         try:
             browser.get('https://www.farfetch.com/ua/useraccount.aspx')
             login_input = browser.find_element_by_id('email-input-login')
-            login_input.send_keys('11mself@stmaryscalne.org')
+            login_input.send_keys('Anthonyroberts@me.com')
             time.sleep(3)
             pass_input = browser.find_element_by_id('password-input-login')
-            pass_input.send_keys('polo55')
+            pass_input.send_keys('gateacre1')
             time.sleep(3)
             checkbox = browser.find_element_by_id('RememberMe')
 
@@ -37,19 +38,27 @@ def check(ip, port):
             login_btn.click()
             time.sleep(3)
 
-            browser.get('https://www.farfetch.com/ua/addressbook/')
+            # browser.get('https://www.farfetch.com/ua/addressbook/')
             # time.sleep(3)
+            # print(browser.page_source)
             # address = json.loads(browser.find_element_by_id("json").text)
             # print(address)
 
 
             # browser.get('https://www.farfetch.com/ua/ajax/userdetails')
             # time.sleep(3)
-            #
-            # browser.get('https://www.farfetch.com/ua/orders/')
-            # print(json.loads(browser.find_element_by_id("json").text))
+            
+            browser.get('https://www.farfetch.com/ua/orders/')
+            time.sleep(5)
+            orders = json.loads(browser.find_element_by_id("json").text)
+            orders_count = len(orders['orders'])
+            for order in orders['orders']:
+                order_path = order['orderNumber']
+                browser.get('https://www.farfetch.com/ua/ajax/orders/orderDetails/index/' + order_path)
+                time.sleep(5)
+                single_order = json.loads(browser.find_element_by_id("json").text)
 
-            time.sleep(80)
+            time.sleep(30)
         except Exception as expt:
             print(expt)
         
@@ -65,7 +74,7 @@ if __name__ == '__main__':
     # model.__setattr__('countryCode', 'ru_RU')
     # model.save()
     # i=0
-    # ip, port = None. Для работы с прокси -> GetProxy
-    check(ip='176.28.64.225', port=3128)
 
-# db_check()
+    # ip, port = None. Для работы с прокси -> GetProxy
+    check(ip='188.119.121.191', port=24531)
+    # check(ip=None, port=None)

@@ -12,6 +12,7 @@ class Browser:
         options.set_preference('dom.webnotifications.enabled', False)
         options.set_preference('media.volume_scale', '0.0')
         options.set_preference('general.useragent.override', useragent.random)
+        # options.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36 OPR/75.0.3969.149')
 
         if ip and port:
             options.set_preference('network.proxy.type', 1)
