@@ -36,3 +36,11 @@ class Browser:
         browser.set_window_size(1272, 774)
 
         return browser
+
+    @staticmethod
+    def gen_cookie(cookie_list):
+        cookie_str = ''
+        for c in cookie_list:
+            cookie_str = cookie_str + c['name'] + '=' + c['value'] + '; '
+
+        return cookie_str

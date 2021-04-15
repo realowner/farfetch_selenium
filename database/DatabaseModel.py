@@ -25,22 +25,22 @@ class OrdersModel(BaseModel):
     created_at = IntegerField(null=True)
     updated_at = IntegerField(null=True)
 
-    def update_with_status_2(id, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
+    def update_with_status_2(self, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
                              orders=None, cards=None, date_of_check=None):
         # достаем нужную строку
-        row = OrdersModel.get(OrdersModel.id == id)
+        # row = OrdersModel.get(OrdersModel.id == id)
         # обновляем ее поля
-        row.country = country
-        row.countryCode = countryCode
-        row.zipCode = zipCode
-        row.phone = phone
-        row.orderPrices = orderPrices
-        row.status = 2
-        row.orders = orders
-        row.cards = cards
-        row.date_of_check = date_of_check
+        self.country = country
+        self.countryCode = countryCode
+        self.zipCode = zipCode
+        self.phone = phone
+        self.orderPrices = orderPrices
+        self.status = 2
+        self.orders = orders
+        self.cards = cards
+        self.date_of_check = date_of_check
         # сохраняем 
-        row.save()
+        self.save()
 
     def update_with_status_3(id):
         # достаем нужную строку
@@ -57,9 +57,24 @@ class OrdersModel(BaseModel):
 
         return row
 
-    def set_country(self, address_book):
-        pass
+    @staticmethod
+    def get_by_status(status):
+        # достаем нужную строку
+        rows = OrdersModel.get(OrdersModel.status == status)
 
+        return rows
+
+    def set_country(self, address_book):
+        adr = address_book.get('addressBook', {}).get('addresses', [])
+        if adr:
+            self.countryCode = adr[0]['flatAddress']['country']['alpha2Code']
+            self.country = adr[0]['flatAddress']['country']['nativeName']
+            self.phone = adr[0]['flatAddress'].get('phone', None)
+            self.save()
+
+    def set_status(self, status):
+        self.status = status
+        self.save()
 
     class Meta:
         db_table = "orders"
