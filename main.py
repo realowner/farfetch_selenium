@@ -24,7 +24,7 @@ def test(ip, port, model):
 
 
 def check(ip, port, username, password, model):
-    browser = Browser.my_browser(ip, port)
+    browser = Browser.my_browser(ip, port, username, password)
     try:
         browser.set_page_load_timeout(60)
         print(f'= Farfetch Parser | Account {model.email} =')

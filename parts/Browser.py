@@ -7,8 +7,8 @@ class Browser:
     def my_browser(ip=None, port=None, username=None, password=None):
 
         useragent = UserAgent()
-        username = 'vkhvmi'
-        password = 'rMclfFR1F0'
+        # username = 'vkhvmi'
+        # password = 'rMclfFR1F0'
 
         options = webdriver.FirefoxOptions()
         options.set_preference('dom.webdriver.enabled', False)
