@@ -1,4 +1,5 @@
-from selenium import webdriver
+# from selenium import webdriver
+from seleniumwire import webdriver
 from fake_useragent import UserAgent
 
 class Browser:
@@ -6,6 +7,8 @@ class Browser:
     def my_browser(ip=None, port=None):
 
         useragent = UserAgent()
+        username = 'vkhvmi'
+        password = 'rMclfFR1F0'
 
         options = webdriver.FirefoxOptions()
         options.set_preference('dom.webdriver.enabled', False)
@@ -23,16 +26,24 @@ class Browser:
             options.set_preference('network.proxy.ssl', ip)
             options.set_preference('network.proxy.ssl_port', port)
 
+            proptions = {
+                'proxy': {
+                    'http': f'http://{username}:{password}@{ip}:{port}',
+                    'https': f'https://{username}:{password}@{ip}:{port}'
+                }
+            }
+        else:
+            proptions = None
+
         options.headless = False
 
         browser = webdriver.Firefox(
             # for windows
             # executable_path="firefoxdriver\geckodriver.exe",
-
             # for linux
             executable_path='firefoxdriver/geckodriver',
-
             options=options,
+            seleniumwire_options=proptions,
         )
         browser.set_window_size(1272, 774)
 

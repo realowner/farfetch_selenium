@@ -1,4 +1,5 @@
 from peewee import *
+import datetime
 
 # database = SqliteDatabase('orders.db')
 database = SqliteDatabase('test_orders.db')
@@ -26,22 +27,6 @@ class OrdersModel(BaseModel):
     created_at = IntegerField(null=True)
     updated_at = IntegerField(null=True)
 
-    def update_with_status(self, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
-                            status=None, orders=None, cards=None, date_of_check=None):
-        # достаем нужную строку
-        # row = OrdersModel.get(OrdersModel.id == id)
-        # обновляем ее поля
-        self.country = country
-        self.countryCode = countryCode
-        self.zipCode = zipCode
-        self.phone = phone
-        self.orderPrices = orderPrices
-        self.status = status
-        self.orders = orders
-        self.cards = cards
-        self.date_of_check = date_of_check
-        # сохраняем 
-        self.save()
 
     @staticmethod
     def get_by_email(email: str):
@@ -50,12 +35,51 @@ class OrdersModel(BaseModel):
 
         return row
 
-    def set_country(self, address_book):
-        pass
+
+    def set_phone(self, phone):
+        try:
+            self.phone = phone
+            self.save()
+            res = 'phone: row updated'
+        except:
+            res = 'phone: update fail'
+
+        return res
+
+
+    def set_country(self, country, countryCode):
+        try:
+            self.country = country
+            self.countryCode = countryCode
+            self.save()
+            res = 'country: row updated'
+        except:
+            res = 'country: update fail'
+
+        return res
+
+
+    def set_orders(self, orders_count):
+        try:
+            self.orders = orders_count
+            self.save()
+            res = 'orders: row updated'
+        except:
+            res = 'orders: update fail'
+
+        return res
+
 
     def set_status(self, status):
-        self.status = status
-        self.save()
+        try:
+            self.status = status
+            self.date_of_check = datetime.date.today().strftime('%d.%m.%Y')
+            self.save()
+            res = f'set status {status}!'
+        except:
+            res = 'status update fail'
+
+        return res
 
 
     class Meta:
