@@ -1,6 +1,7 @@
 from peewee import *
 
-database = SqliteDatabase('orders.db')
+# database = SqliteDatabase('orders.db')
+database = SqliteDatabase('test_orders.db')
 
 
 class BaseModel(Model):
@@ -25,30 +26,22 @@ class OrdersModel(BaseModel):
     created_at = IntegerField(null=True)
     updated_at = IntegerField(null=True)
 
-    def update_with_status_2(id, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
-                             orders=None, cards=None, date_of_check=None):
+    def update_with_status(self, country=None, countryCode=None, zipCode=None, phone=None, orderPrices=None,
+                            status=None, orders=None, cards=None, date_of_check=None):
         # достаем нужную строку
-        row = OrdersModel.get(OrdersModel.id == id)
+        # row = OrdersModel.get(OrdersModel.id == id)
         # обновляем ее поля
-        row.country = country
-        row.countryCode = countryCode
-        row.zipCode = zipCode
-        row.phone = phone
-        row.orderPrices = orderPrices
-        row.status = 2
-        row.orders = orders
-        row.cards = cards
-        row.date_of_check = date_of_check
+        self.country = country
+        self.countryCode = countryCode
+        self.zipCode = zipCode
+        self.phone = phone
+        self.orderPrices = orderPrices
+        self.status = status
+        self.orders = orders
+        self.cards = cards
+        self.date_of_check = date_of_check
         # сохраняем 
-        row.save()
-
-    def update_with_status_3(id):
-        # достаем нужную строку
-        row = OrdersModel.get(OrdersModel.id == id)
-        # обновляем ее поля
-        row.status = 3
-        # сохраняем 
-        row.save()
+        self.save()
 
     @staticmethod
     def get_by_email(email: str):
@@ -59,6 +52,10 @@ class OrdersModel(BaseModel):
 
     def set_country(self, address_book):
         pass
+
+    def set_status(self, status):
+        self.status = status
+        self.save()
 
 
     class Meta:

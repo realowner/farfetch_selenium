@@ -2,6 +2,5 @@ venv
 __pycache__
 geckodriver.log
 .vscode
-test_orders.db
 env
 .idea
