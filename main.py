@@ -2,6 +2,7 @@ from parts.Browser import Browser
 from parts.GetProxy import GetProxy
 from database.DatabaseModel import OrdersModel
 
+import random
 import time
 import requests
 
@@ -22,7 +23,7 @@ def test(ip, port, model):
         browser.quit()
 
 
-def check(ip, port, model):
+def check(ip, port, username, password, model):
     browser = Browser.my_browser(ip, port)
     try:
         browser.set_page_load_timeout(60)
@@ -154,12 +155,14 @@ def check(ip, port, model):
 
 
 if __name__ == '__main__':
-    model = OrdersModel.get_by_email('Anthonyroberts@me.com')
+    proxies = GetProxy.get_list()
 
     # цикл по бд
-    data = OrdersModel.select().where(OrdersModel.status != 2)
+    data = OrdersModel.select().where(OrdersModel.email == 'ellendolan@icloud.co.uk')
+    # data = OrdersModel.select().where(OrdersModel.status != 2)
     for row in data:
-        check(ip=None, port=None, model=row)
+        proxy_elem = random.choice(proxies)
+        check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=proxy_elem['login'], password=proxy_elem['password'], model=row)
         # check(ip='188.119.121.191', port=24531, model=row)
 
     # ip, port = None. Для работы с прокси -> GetProxy

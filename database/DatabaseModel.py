@@ -2,7 +2,7 @@ from peewee import *
 import datetime
 
 # database = SqliteDatabase('orders.db')
-database = SqliteDatabase('test_orders.db')
+database = SqliteDatabase('orders.db')
 
 
 class BaseModel(Model):
@@ -84,4 +84,20 @@ class OrdersModel(BaseModel):
 
     class Meta:
         db_table = "orders"
+        order_by = ('id',)
+
+
+class ProxyModel(BaseModel):
+    id = PrimaryKeyField(null=False)
+    host = CharField(max_length=255, null=True)
+    port = CharField(max_length=255, null=True)
+    login = CharField(max_length=255, null=True)
+    password = CharField(max_length=255, null=True)
+    status = CharField(max_length=255, null=True)
+    created_at = IntegerField(null=False)
+    updated_at = IntegerField(null=False)
+
+
+    class Meta:
+        db_table = 'proxy'
         order_by = ('id',)

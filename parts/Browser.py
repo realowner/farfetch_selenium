@@ -4,7 +4,7 @@ from fake_useragent import UserAgent
 
 class Browser:
 
-    def my_browser(ip=None, port=None):
+    def my_browser(ip=None, port=None, username=None, password=None):
 
         useragent = UserAgent()
         username = 'vkhvmi'
