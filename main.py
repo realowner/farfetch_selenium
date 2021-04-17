@@ -161,19 +161,28 @@ def check(ip, port, username, password, model):
 
 
 if __name__ == '__main__':
-    data = OrdersModel.select().where(OrdersModel.status == 4).limit(10)
+    data = OrdersModel.select().where(OrdersModel.status == 1).limit(1000)
+
     proxies = GetProxy.get_list()
+    proxies_count = len(proxies)
     cycler = cycle(proxies)
     first = next(cycler)
+
     do_it = True
+    loop = 0
     
     for row in data:
         if do_it is False:
             print('PROXY RETURNED CAPCHA')
+            loop += 1
+            if loop == proxies_count:
+                print('FULL PROXY CYCLE. SLEEP...')
+                time.sleep(600)
+                loop = 0
             proxy_elem = next(cycler)
         else:
             proxy_elem = first
-        # check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=proxy_elem['login'], password=proxy_elem['password'], model=row)
         print('USING PROXY WITHOUT CAPCHA')
-        print('---------------')
+        print('--------------------')
         do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=None, password=None, model=row)
+        
