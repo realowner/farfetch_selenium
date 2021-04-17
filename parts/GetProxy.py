@@ -4,7 +4,7 @@ class GetProxy:
 
     def get_list():
         proxy_list = []
-        proxies = ProxyModel.select()
+        proxies = ProxyModel.select().where(ProxyModel.status == 1)
         for proxy in proxies:
             proxy_list.append({
                 'host': proxy.host,

@@ -1,5 +1,5 @@
-# from selenium import webdriver
-from seleniumwire import webdriver
+from selenium import webdriver
+# from seleniumwire import webdriver
 from fake_useragent import UserAgent
 
 class Browser:
@@ -26,24 +26,25 @@ class Browser:
             options.set_preference('network.proxy.ssl', ip)
             options.set_preference('network.proxy.ssl_port', port)
 
-            proptions = {
-                'proxy': {
-                    'http': f'http://{username}:{password}@{ip}:{port}',
-                    'https': f'https://{username}:{password}@{ip}:{port}'
-                }
-            }
-        else:
-            proptions = None
+            # if useragent and password:
+            #     proptions = {
+            #         'proxy': {
+            #             'http': f'http://{username}:{password}@{ip}:{port}',
+            #             'https': f'https://{username}:{password}@{ip}:{port}'
+            #         }
+            #     }
+            # else:
+            #     proptions = None
 
-        options.headless = False
+        options.headless = True
 
         browser = webdriver.Firefox(
             # for windows
             # executable_path="firefoxdriver\geckodriver.exe",
             # for linux
             executable_path='firefoxdriver/geckodriver',
-            options=options,
-            seleniumwire_options=proptions,
+            options=options
+            # seleniumwire_options=proptions,
         )
         browser.set_window_size(1272, 774)
 
