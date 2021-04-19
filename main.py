@@ -1,11 +1,12 @@
 from parts.Browser import Browser
 from parts.GetProxy import GetProxy
+from parts.ArgParser import ArgsParser
 from database.DatabaseModel import OrdersModel
 
-import random
 import time
 import requests
 from itertools import cycle
+from threading import Thread
 
 
 def check(ip, port, username, password, model):
@@ -159,30 +160,110 @@ def check(ip, port, username, password, model):
         return False
 
 
-
-if __name__ == '__main__':
-    data = OrdersModel.select().where(OrdersModel.status == 1).limit(1000)
+def main(factor, limit=None):
+    data = OrdersModel.select().where(OrdersModel.status == 1).limit(limit).offset(limit*factor)
 
     proxies = GetProxy.get_list()
+
     proxies_count = len(proxies)
     cycler = cycle(proxies)
-    first = next(cycler)
+    first_proxy = next(cycler)
+    curr_proxy = first_proxy
 
     do_it = True
     loop = 0
-    
+    rows_done = 1
+    done_with_status_4 = 0
+    done_with_status_3_2 = 0
+
     for row in data:
+        proxy_elem = curr_proxy
         if do_it is False:
-            print('PROXY RETURNED CAPCHA')
+            print(f'THR-{factor}: PROXY RETURNED CAPCHA')
             loop += 1
+            done_with_status_4 += 1
             if loop == proxies_count:
-                print('FULL PROXY CYCLE. SLEEP...')
+                print(f'THR-{factor}: FULL PROXY CYCLE. SLEEP...')
                 time.sleep(600)
                 loop = 0
+                proxy_elem = first_proxy
             proxy_elem = next(cycler)
-        else:
-            proxy_elem = first
-        print('USING PROXY WITHOUT CAPCHA')
+            curr_proxy = proxy_elem
+            done_with_status_3_2 += 1
+
+        print(f'THR-{factor}: USING PROXY WITHOUT CAPCHA {rows_done}/{len(data)}')
         print('--------------------')
         do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=None, password=None, model=row)
-        
+        rows_done += 1
+
+    print(f'THR-{factor}: STATUS 4 - {done_with_status_4} | STATUS 3/2 - {done_with_status_3_2}')
+
+
+def with_threads(thread_num, limit=None):
+    thread_list = []
+    if limit:
+        rows_for_thread = limit / thread_num
+    else:
+        all_rows = OrdersModel.select().where(OrdersModel.status == 1)
+        rows_for_thread = len(all_rows) / thread_num
+
+    for count in range(thread_num):
+        thread = Thread(target=main, name=f'THREAD {count+1}', args=(count+1, rows_for_thread,))
+        thread_list.append(thread)
+        thread.start()
+        print(f'Thread {count+1} started')
+    for thr in thread_list:
+        thr.join()    
+        print(f'Thread {count+1} joined')
+
+if __name__ == '__main__':
+    args = ArgsParser.parse()
+
+    if args.threads_count and args.rows_count:
+        print(f'Parsing {args.rows_count} rows with {args.threads_count} threads')
+        confim = input("Continue? (y/anything):")
+        if confim == 'y':
+            start_time = time.time()
+
+            with_threads(thread_num=args.threads_count, limit=args.rows_count)
+
+            print(f'= RUNNING TIME {time.time()-start_time} =')
+        else:
+            print('Bye')
+
+    elif args.threads_count or args.rows_count:
+        if args.rows_count:
+            print(f'Parsing {args.rows_count} rows with 1 threads')
+
+            confim = input("Continue? (y/anything):")
+            if confim == 'y':
+                start_time = time.time()
+                
+                with_threads(thread_num=1, limit=args.rows_count)
+
+                print(f'= RUNNING TIME {time.time()-start_time} =')
+            else:
+                print('Bye')
+        elif args.threads_count:
+            print(f'Parsing all rows with {args.threads_count} threads')
+
+            confim = input("Continue? (y/anything):")
+            if confim == 'y':
+                start_time = time.time()
+                
+                with_threads(thread_num=args.threads_count, limit=None)
+
+                print(f'= RUNNING TIME {time.time()-start_time} =')
+            else:
+                print('Bye')
+    else:
+        print(f'Parsing all rows with 1 threads')
+        confim = input("Continue? (y/anything):")
+        if confim == 'y':
+            start_time = time.time()
+            
+            with_threads(thread_num=1, limit=None)
+
+            print(f'= RUNNING TIME {time.time()-start_time} =')
+        else:
+            print('Bye')
