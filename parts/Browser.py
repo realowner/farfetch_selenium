@@ -1,6 +1,7 @@
 from selenium import webdriver
 # from seleniumwire import webdriver
 from fake_useragent import UserAgent
+from .WindowSize import WindowSize
 
 class Browser:
 
@@ -46,7 +47,8 @@ class Browser:
             options=options
             # seleniumwire_options=proptions,
         )
-        browser.set_window_size(1272, 774)
+        window_size = WindowSize.get_size()
+        browser.set_window_size(window_size['width'], window_size['height'])
 
         return browser
 

