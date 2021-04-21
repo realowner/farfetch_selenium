@@ -1,7 +1,7 @@
 venv
 __pycache__
-geckodriver.log
 .vscode
 env
 .idea
 orders.db
+*.log

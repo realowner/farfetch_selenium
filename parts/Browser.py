@@ -52,7 +52,7 @@ class Browser:
 
         return browser
 
-    # @staticmethod
+    @staticmethod
     def gen_cookie(cookie_list):
         cookie_str = ''
         for c in cookie_list:
