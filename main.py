@@ -16,9 +16,11 @@ def check(ip, port, username, password, model, custom_logger):
     try:
         browser = Browser.my_browser(ip, port, username, password)
         try:
-            browser.set_page_load_timeout(30)
+            browser.set_page_load_timeout(60)
             custom_logger.info(f'= Farfetch Parser | Account {model.email} | With {ip}:{port} =')
             try:
+                # browser.get('https://www.myip.ru')
+                # time.sleep(10)
                 browser.get('https://www.farfetch.com/ua/useraccount.aspx')
                 browser.find_element_by_id('login-signIn')
                 custom_logger.info('page load - DONE')
@@ -196,6 +198,7 @@ def main(custom_logger, proxy_slice, factor, limit=None):
         custom_logger.info(f'THR-{factor}: USING PROXY WITHOUT CAPCHA {rows_done}/{len(data)}')
         custom_logger.info('--------------------')
 
+        # do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=proxy_elem['login'], password=proxy_elem['password'], model=row, custom_logger=custom_logger)
         do_it = check(ip=proxy_elem['host'], port=int(proxy_elem['port']), username=None, password=None, model=row, custom_logger=custom_logger)
 
         if do_it is False:
@@ -214,8 +217,8 @@ def main(custom_logger, proxy_slice, factor, limit=None):
 def with_threads(thread_num, limit=None):
     
     # выбор источника прокси
-    # proxies = GetProxy.get_from_url()
-    proxies = GetProxy.get_list()
+    proxies = GetProxy.get_from_url()
+    # proxies = GetProxy.get_list()
     
     # распределение записей и прокси между тредами
     how_many_proxy = math.floor(len(proxies)/thread_num)

@@ -6,7 +6,7 @@ class GetProxy:
 
     def get_list():
         proxy_list = []
-        proxies = ProxyModel.select().where(ProxyModel.status == 1)
+        proxies = ProxyModel.select().where(ProxyModel.status == 3)
         for proxy in proxies:
             proxy_list.append({
                 'host': proxy.host,
@@ -21,7 +21,7 @@ class GetProxy:
     def get_from_url():
 
         proxy_list = []
-        res = requests.get('http://nosok.org/export?id=00de5d9a&type=1&format=proxy&ipField=ip_dynamic_without_replace&countries=RU%2CCZ%2CUA%2CPL&uptime=3600').text
+        res = requests.get('http://nosok.org/export?id=b321423a&type=1&format=proxy&ipField=ip_dynamic_with_replace&countries=GB').text
 
         with open('nosokproxy.txt', 'w') as file:
             file.write(res)

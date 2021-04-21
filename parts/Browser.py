@@ -8,15 +8,12 @@ class Browser:
     def my_browser(ip=None, port=None, username=None, password=None):
 
         useragent = UserAgent()
-        # username = 'vkhvmi'
-        # password = 'rMclfFR1F0'
 
         options = webdriver.FirefoxOptions()
         options.set_preference('dom.webdriver.enabled', False)
         options.set_preference('dom.webnotifications.enabled', False)
         options.set_preference('media.volume_scale', '0.0')
         options.set_preference('general.useragent.override', useragent.random)
-        # options.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36 OPR/75.0.3969.149')
 
         if ip and port:
             options.set_preference('network.proxy.type', 1)
@@ -27,15 +24,15 @@ class Browser:
             options.set_preference('network.proxy.ssl', ip)
             options.set_preference('network.proxy.ssl_port', port)
 
-            # if useragent and password:
-            #     proptions = {
-            #         'proxy': {
-            #             'http': f'http://{username}:{password}@{ip}:{port}',
-            #             'https': f'https://{username}:{password}@{ip}:{port}'
-            #         }
-            #     }
-            # else:
-            #     proptions = None
+            if useragent and password:
+                proptions = {
+                    'proxy': {
+                        'http': f'http://{username}:{password}@{ip}:{port}',
+                        'https': f'https://{username}:{password}@{ip}:{port}'
+                    }
+                }
+            else:
+                proptions = None
 
         options.headless = True
 

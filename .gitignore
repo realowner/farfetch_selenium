@@ -5,3 +5,4 @@ env
 .idea
 orders.db
 *.log
+nosokproxy.txt
