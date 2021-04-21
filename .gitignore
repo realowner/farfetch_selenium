@@ -5,5 +5,3 @@ geckodriver.log
 env
 .idea
 orders.db
-orders2.db
-test_orders.db
