@@ -4,9 +4,10 @@ import re
 
 class GetProxy:
 
+    # прокси с базы данных
     def get_list():
         proxy_list = []
-        proxies = ProxyModel.select().where(ProxyModel.status == 3)
+        proxies = ProxyModel.select().where(ProxyModel.status == 1)
         for proxy in proxies:
             proxy_list.append({
                 'host': proxy.host,
@@ -18,10 +19,12 @@ class GetProxy:
         return proxy_list
 
 
+    # достаем прокси с nosok
     def get_from_url():
 
         proxy_list = []
-        res = requests.get('http://nosok.org/export?id=b321423a&type=1&format=proxy&ipField=ip_dynamic_with_replace&countries=GB').text
+        # ссылку на список прокси менять здесь
+        res = requests.get('http://nosok.org/export?id=b321423a&type=1&format=proxy&ipField=ip_dynamic_with_replace').text
 
         with open('nosokproxy.txt', 'w') as file:
             file.write(res)

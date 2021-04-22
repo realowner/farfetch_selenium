@@ -3,6 +3,7 @@ from selenium import webdriver
 from fake_useragent import UserAgent
 from .WindowSize import WindowSize
 
+
 class Browser:
 
     def my_browser(ip=None, port=None, username=None, password=None):
@@ -24,15 +25,15 @@ class Browser:
             options.set_preference('network.proxy.ssl', ip)
             options.set_preference('network.proxy.ssl_port', port)
 
-            if useragent and password:
-                proptions = {
-                    'proxy': {
-                        'http': f'http://{username}:{password}@{ip}:{port}',
-                        'https': f'https://{username}:{password}@{ip}:{port}'
-                    }
-                }
-            else:
-                proptions = None
+            # if useragent and password:
+            #     proptions = {
+            #         'proxy': {
+            #             'http': f'http://{username}:{password}@{ip}:{port}',
+            #             'https': f'https://{username}:{password}@{ip}:{port}'
+            #         }
+            #     }
+            # else:
+            #     proptions = None
 
         options.headless = True
 
