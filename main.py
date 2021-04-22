@@ -178,11 +178,11 @@ if __name__ == '__main__':
                 int_res = available_rows - modulo
                 try:
                     if available_rows == 0:
-                        global_logger.info('No accounts available. Sleep 600s...')
-                        time.sleep(30)
+                        global_logger.info('No accounts available. Sleep 900s...')
+                        time.sleep(900)
                     elif int_res < threads:
-                        global_logger.info('Nnot enough accounts. Sleep 600s...')
-                        time.sleep(30)
+                        global_logger.info('Nnot enough accounts. Sleep 900s...')
+                        time.sleep(900)
                     else:
                         global_logger.info(f'----------------------------------------------')
                         global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
