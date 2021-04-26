@@ -6,4 +6,3 @@ env
 orders.db
 *.log
 nosokproxy.txt
-orders.db

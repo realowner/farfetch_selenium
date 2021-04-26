@@ -129,6 +129,7 @@ if __name__ == '__main__':
         global_logger.info(f'Parsing {args.rows_count} rows with {args.threads_count} threads')
         confim = input("Continue? (y/anything):")
         if confim == 'y':
+            global_logger.info(f'=== SCRIPT LAUNCHED | DEBUGGING ===')
             start_time = time.time()
 
             global_logger.info(with_threads(thread_num=args.threads_count, limit=args.rows_count))
@@ -143,6 +144,7 @@ if __name__ == '__main__':
 
             confim = input("Continue? (y/anything):")
             if confim == 'y':
+                global_logger.info(f'=== SCRIPT LAUNCHED | DEBUGGING ===')
                 start_time = time.time()
                 
                 global_logger.info(with_threads(thread_num=1, limit=args.rows_count))
@@ -151,24 +153,58 @@ if __name__ == '__main__':
             else:
                 print('Bye')
         elif args.threads_count:
-            print(f'Parsing all rows with {args.threads_count} threads')
+            global_logger.info(f'=== SCRIPT LAUNCHED | ENDLESS LOOP ===')
 
-            confim = input("Continue? (y/anything):")
-            if confim == 'y':
-                start_time = time.time()
+            threads = args.threads_count
+
+            while threads == args.threads_count:
+                try:
+                    available_rows = len(OrdersModel.select().where(OrdersModel.status == 1))
+                    modulo = available_rows % threads
+                    int_res = available_rows - modulo
+                    try:
+                        if available_rows == 0:
+                            global_logger.info('No accounts available. Sleep 900s...')
+                            time.sleep(900)
+                        elif int_res < threads:
+                            global_logger.info('Nnot enough accounts. Sleep 900s...')
+                            time.sleep(900)
+                        else:
+                            global_logger.info(f'----------------------------------------------')
+                            global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
+                            start_time = time.time()
+
+                            global_logger.info(with_threads(thread_num=threads, limit=int_res))
+
+                            global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
+                            global_logger.info(f'----------------------------------------------')
+                    except:
+                        global_logger.info('Error in preparatory condition. Script stoped :(')
+                        break
+                except:
+                    global_logger.info('Failed to connect to DB. Script stoped :(')
+                    break
+
+            # global_logger.info(f'Parsing all rows with {args.threads_count} threads')
+
+            # confim = input("Continue? (y/anything):")
+            # if confim == 'y':
+            #     global_logger.info(f'=== SCRIPT LAUNCHED | DEBUGGING ===')
+            #     start_time = time.time()
                 
-                global_logger.info(with_threads(thread_num=args.threads_count, limit=None))
+            #     global_logger.info(with_threads(thread_num=args.threads_count, limit=None))
 
-                global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
-            else:
-                print('Bye')
+            #     global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
+            # else:
+            #     print('Bye')
     else:
-        global_logger.info(f'=== SCRIPT LAUNCHED ===')
+        global_logger.info(f'=== SCRIPT LAUNCHED | ENDLESS LOOP ===')
 
-        # confim = input("Continue? (y/anything):")
+        # confim = input("Run an endless loop? (y/anything):")
         # if confim == 'y':
 
         # глобальное количество потоков
+        # thr_input = input('Enter the number of threads: ')
         threads = 10
 
         while threads == 10:
@@ -198,7 +234,6 @@ if __name__ == '__main__':
             except:
                 global_logger.info('Failed to connect to DB. Script stoped :(')
                 break
-
 
         # else:
         #     print('Bye')
