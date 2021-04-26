@@ -167,7 +167,7 @@ if __name__ == '__main__':
                             global_logger.info('No accounts available. Sleep 900s...')
                             time.sleep(900)
                         elif int_res < threads:
-                            global_logger.info('Nnot enough accounts. Sleep 900s...')
+                            global_logger.info('Not enough accounts. Sleep 900s...')
                             time.sleep(900)
                         else:
                             global_logger.info(f'----------------------------------------------')
@@ -200,11 +200,6 @@ if __name__ == '__main__':
     else:
         global_logger.info(f'=== SCRIPT LAUNCHED | ENDLESS LOOP ===')
 
-        # confim = input("Run an endless loop? (y/anything):")
-        # if confim == 'y':
-
-        # глобальное количество потоков
-        # thr_input = input('Enter the number of threads: ')
         threads = 10
 
         while threads == 10:
@@ -234,6 +229,3 @@ if __name__ == '__main__':
             except:
                 global_logger.info('Failed to connect to DB. Script stoped :(')
                 break
-
-        # else:
-        #     print('Bye')
