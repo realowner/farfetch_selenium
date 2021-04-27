@@ -2,7 +2,7 @@ from peewee import *
 import datetime
 
 # путь к БД
-database = SqliteDatabase('orders.db')
+database = SqliteDatabase('/home/root/parser_db/orders.db')
 # database = SqliteDatabase('orders.db')
 
 
