@@ -2,7 +2,7 @@ from re import match
 from parts.GetProxy import GetProxy
 from parts.ArgParser import ArgsParser
 from parts.Algorithm import Algorithm
-from database.DatabaseModel import OrdersModel
+from database.DatabaseModel import OrdersModel, ProxyModel
 
 import time
 from itertools import cycle
@@ -159,28 +159,33 @@ if __name__ == '__main__':
 
             while threads == args.threads_count:
                 try:
-                    available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
-                    modulo = available_rows % threads
-                    int_res = available_rows - modulo
-                    try:
-                        if available_rows == 0:
-                            global_logger.info('No accounts available. Sleep 900s...')
-                            time.sleep(900)
-                        elif int_res < threads:
-                            global_logger.info('Not enough accounts. Sleep 900s...')
-                            time.sleep(900)
-                        else:
-                            global_logger.info(f'----------------------------------------------')
-                            global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
-                            start_time = time.time()
+                    available_proxies = len(ProxyModel.select().where(ProxyModel.status == 1))
+                    if available_proxies >= threads:
+                        available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
+                        modulo = available_rows % threads
+                        int_res = available_rows - modulo
+                        try:
+                            if available_rows == 0:
+                                global_logger.info('No accounts available. Sleep 900s...')
+                                time.sleep(900)
+                            elif int_res < threads:
+                                global_logger.info('Nnot enough accounts. Sleep 900s...')
+                                time.sleep(900)
+                            else:
+                                global_logger.info(f'----------------------------------------------')
+                                global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
+                                start_time = time.time()
 
-                            global_logger.info(with_threads(thread_num=threads, limit=int_res))
+                                global_logger.info(with_threads(thread_num=threads, limit=int_res))
 
-                            global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
-                            global_logger.info(f'----------------------------------------------')
-                    except:
-                        global_logger.info('Error in preparatory condition. Script stoped :(')
-                        break
+                                global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
+                                global_logger.info(f'----------------------------------------------')
+                        except:
+                            global_logger.info('Error in preparatory condition. Script stoped :(')
+                            break
+                    else:
+                        global_logger.info('Nnot enough accounts. Sleep 900s...')
+                        time.sleep(900)
                 except:
                     global_logger.info('Failed to connect to DB. Script stoped :(')
                     break
@@ -204,28 +209,33 @@ if __name__ == '__main__':
 
         while threads == 10:
             try:
-                available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
-                modulo = available_rows % threads
-                int_res = available_rows - modulo
-                try:
-                    if available_rows == 0:
-                        global_logger.info('No accounts available. Sleep 900s...')
-                        time.sleep(900)
-                    elif int_res < threads:
-                        global_logger.info('Nnot enough accounts. Sleep 900s...')
-                        time.sleep(900)
-                    else:
-                        global_logger.info(f'----------------------------------------------')
-                        global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
-                        start_time = time.time()
+                available_proxies = len(ProxyModel.select().where(ProxyModel.status == 1))
+                if available_proxies >= threads:
+                    available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
+                    modulo = available_rows % threads
+                    int_res = available_rows - modulo
+                    try:
+                        if available_rows == 0:
+                            global_logger.info('No accounts available. Sleep 900s...')
+                            time.sleep(900)
+                        elif int_res < threads:
+                            global_logger.info('Nnot enough accounts. Sleep 900s...')
+                            time.sleep(900)
+                        else:
+                            global_logger.info(f'----------------------------------------------')
+                            global_logger.info(f'PARSING AVAILABLE ROWS WITH {threads} THREADS')
+                            start_time = time.time()
 
-                        global_logger.info(with_threads(thread_num=threads, limit=int_res))
+                            global_logger.info(with_threads(thread_num=threads, limit=int_res))
 
-                        global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
-                        global_logger.info(f'----------------------------------------------')
-                except:
-                    global_logger.info('Error in preparatory condition. Script stoped :(')
-                    break
+                            global_logger.info(f'= RUNNING TIME {time.time()-start_time} =')
+                            global_logger.info(f'----------------------------------------------')
+                    except:
+                        global_logger.info('Error in preparatory condition. Script stoped :(')
+                        break
+                else:
+                    global_logger.info('Nnot enough accounts. Sleep 900s...')
+                    time.sleep(900)
             except:
                 global_logger.info('Failed to connect to DB. Script stoped :(')
                 break
