@@ -23,9 +23,9 @@ def main(custom_logger, proxy_slice, factor, limit=None):
 
     # выборка записей для обработки
     if factor == 1:
-        data = OrdersModel.select().where(OrdersModel.status == 1).limit(int(limit)) # row status here
+        data = OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)).limit(int(limit)) # row status here
     else:
-        data = OrdersModel.select().where(OrdersModel.status == 1).limit(int(limit)).offset(int(limit)*(factor - 1)) # row status here
+        data = OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)).limit(int(limit)).offset(int(limit)*(factor - 1)) # row status here
     
     # подготовка прокси для цикла
     proxies = proxy_slice
@@ -90,7 +90,7 @@ def with_threads(thread_num, limit=None):
     if limit:
         rows_for_thread = int(limit / thread_num)
     else:
-        all_rows = OrdersModel.select().where(OrdersModel.status == 1) # row status here
+        all_rows = OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)) # row status here
         rows_for_thread = int(len(all_rows) / thread_num)
 
     # циклы запуска и остановки тредов 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
             while threads == args.threads_count:
                 try:
-                    available_rows = len(OrdersModel.select().where(OrdersModel.status == 1))
+                    available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
                     modulo = available_rows % threads
                     int_res = available_rows - modulo
                     try:
@@ -204,7 +204,7 @@ if __name__ == '__main__':
 
         while threads == 10:
             try:
-                available_rows = len(OrdersModel.select().where(OrdersModel.status == 1))
+                available_rows = len(OrdersModel.select().where((OrdersModel.status == 1)|(OrdersModel.status == 4)))
                 modulo = available_rows % threads
                 int_res = available_rows - modulo
                 try:
