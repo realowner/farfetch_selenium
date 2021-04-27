@@ -1,8 +1,10 @@
 from peewee import *
 import datetime
 
-# database = SqliteDatabase('orders.db')
+# путь к БД
 database = SqliteDatabase('orders.db')
+# database = SqliteDatabase('orders.db')
+
 
 
 class BaseModel(Model):
