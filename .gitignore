@@ -3,5 +3,6 @@ __pycache__
 .vscode
 env
 .idea
+orders.db
 *.log
 nosokproxy.txt
